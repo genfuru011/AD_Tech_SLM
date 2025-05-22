@@ -27,6 +27,7 @@
 - 
 <img width="633" alt="Image" src="https://github.com/user-attachments/assets/a0c9bf1c-a7e9-4ead-a18d-dc47a0b874f1" />
 <img width="566" alt="Image" src="https://github.com/user-attachments/assets/9c941693-71b1-4da6-b043-42a4deb54954" />
+
 要するに人間がLLMの人格、性格話し方、トーン、表現の仕方などをチューニングできると言うことです。
 以上の特徴から広告表現特化SLMにはDPOが最適と判断しました。
 
