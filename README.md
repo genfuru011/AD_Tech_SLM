@@ -8,7 +8,7 @@
 --Google colab [GPU=NvidiaA100]--
 --Ollama--
 
-###　手法
+### 手法
 DPO （Direct Preference Optimization） が最適
 DPO は「選ばれた文」と「却下された文」を対で学習し、相対的な優劣で判別し出力を好ましい方向に一気に寄せる
 
@@ -28,7 +28,7 @@ trainer.model.save_pretrained("ad-copy-dpo")
 --Gemma3N 4B--
 同規模LLMに比べ比較的性能が高く学習リソースが広いGoogle製LLM 小規模モデルながら　o4-mini並みの性能
 
-##　必要データアセットJSONL
+## 必要データアセットJSONL
 ```json
 {"prompt": "【テーマ】雨の日でもワクワクするニュースアプリを紹介してください", 
  "chosen": "雨が降っても最新トレンドをスマホでサクッとチェック！天気と話題を同時にキャッチして、移動中も退屈知らず♪", 
