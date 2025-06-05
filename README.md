@@ -64,9 +64,8 @@
 - データ前処理パイプライン（テキストクリーニング、トークナイザー設定、不均衡データ対策）
 
 ### 3. 開発環境構築・PoC（3ヶ月）
-- Google Colab（A100）や社内GPUクラスタ利用
-- Hugging Face Hub, Ollama等連携
-- ベースモデル選定（例：Gemma3N-4B）
+- Ollama等連携
+- ベースモデル選定（例：Gemma3-1b）
 - LoRA＋DPOによるトレーニングPoC
 - 初期評価（Preference Accuracy、サンプル広告文の品質評価）
 
