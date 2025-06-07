@@ -69,6 +69,26 @@
 - LoRA＋DPOによるトレーニングPoC
 - 初期評価（Preference Accuracy、サンプル広告文の品質評価）
 
+## 🚀 DPO Training Environment
+
+MacBook Air M2 8GB対応のDPOトレーニング環境が利用可能です！
+
+### クイックスタート
+
+```bash
+# 環境セットアップ
+./quick_start.sh
+
+# DPOトレーニング実行
+source venv/bin/activate
+python scripts/train_dpo.py
+
+# 推論テスト
+python scripts/inference.py
+```
+
+詳細なセットアップガイド: [README_DPO_TRAINING.md](README_DPO_TRAINING.md)
+
 ### 4. モデル本格チューニング・評価（4ヶ月）
 - 大規模DPOトレーニング（サンプル数1k程度を想定）
 - 学習率／バッチサイズのハイパーパラ最適化
