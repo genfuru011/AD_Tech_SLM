@@ -39,6 +39,21 @@ AD_Tech_SLM/
 
 ## 🚀 クイックスタート
 
+### 🌐 Google Colab（推奨・初心者向け）
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](./notebooks/colab_dpo_training.ipynb)
+
+1. **上記のColabリンクをクリック**
+2. **ランタイム設定**: GPU（T4推奨）を選択
+3. **データセット準備**: 以下の3つの方法から選択
+   - 📁 GitHub経由でデータセット取得
+   - ☁️ Google Drive経由でアップロード
+   - 📤 直接ファイルアップロード
+4. **トレーニング実行**: セルを順次実行
+5. **モデルテスト**: 学習済みモデルの性能確認
+
+📋 **詳細ガイド**: [Google Colab使用方法](./docs/README_COLAB.md) | [データセット活用ガイド](./docs/DATASET_USAGE_GUIDE.md)
+
 ### 🎯 ローカル環境でのDPOトレーニング
 
 ```bash
