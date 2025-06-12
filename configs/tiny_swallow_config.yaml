@@ -21,10 +21,10 @@ training:
   num_train_epochs: 3
   max_steps: 800
   
-  # バッチ設定（1.5Bモデル用最適化）
-  per_device_train_batch_size: 2
-  per_device_eval_batch_size: 2
-  gradient_accumulation_steps: 4
+  # バッチ設定（M1 16GB用最適化）
+  per_device_train_batch_size: 4  # メモリ増加に伴い拡大
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 2   # バッチサイズ増加に伴い削減
   
   # 学習率設定
   learning_rate: 1.0e-6
@@ -34,7 +34,7 @@ training:
   eval_steps: 50
   save_steps: 100
   logging_steps: 10
-  evaluation_strategy: "steps"
+  eval_strategy: "steps"  # TRL 0.18.1対応: evaluation_strategy -> eval_strategy
   save_strategy: "steps"
   save_total_limit: 3
   
@@ -44,10 +44,10 @@ training:
   greater_is_better: false
   
   # システム設定
-  fp16: true  # MPS使用時
+  fp16: false  # MPS環境ではfp16を無効化
   dataloader_pin_memory: false
   remove_unused_columns: false
-  report_to: null
+  report_to: []  # 空のリストでログ無効化
 
 # DPO Specific Configuration
 dpo:
@@ -66,9 +66,10 @@ dataset:
   
 # Hardware Optimization
 hardware:
-  # MacBook Air M2 8GB用設定
+  # MacBook Pro M1 16GB用設定（新PC環境）
   use_mps: true
-  memory_efficient: true
+  use_cuda: false
+  memory_efficient: false  # 16GBメモリなので効率モード無効化
   
   # メモリ不足時の代替設定
   fallback:

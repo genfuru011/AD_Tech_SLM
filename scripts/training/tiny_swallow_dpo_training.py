@@ -23,10 +23,9 @@ try:
     from transformers import (
         AutoModelForCausalLM,
         AutoTokenizer,
-        TrainingArguments,
         BitsAndBytesConfig
     )
-    from trl import DPOTrainer
+    from trl import DPOTrainer, DPOConfig
     from datasets import Dataset
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
     import accelerate
@@ -151,9 +150,11 @@ class TinySwallowDPOTrainer:
             task_type="CAUSAL_LM",
         )
         
-        # メモリ効率的な設定
-        if self.config['hardware']['memory_efficient']:
+        # メモリ効率的な設定（MPS環境ではbitsandbytesを無効化）
+        if self.config['hardware']['memory_efficient'] and self.device == "cuda":
             self.model = prepare_model_for_kbit_training(self.model)
+        elif self.device == "mps":
+            self.logger.info("🔧 MPS環境: bitsandbytesをスキップ")
         
         self.model = get_peft_model(self.model, lora_config)
         self.logger.info("🔧 LoRA設定を適用")
@@ -254,64 +255,100 @@ class TinySwallowDPOTrainer:
             self.logger.info("🔧 メモリ効率モードを適用")
             training_config.update(fallback)
         
-        # TrainingArgumentsの設定
-        training_args = TrainingArguments(
-            output_dir=output_dir,
-            num_train_epochs=training_config['num_train_epochs'],
-            max_steps=training_config['max_steps'],
-            per_device_train_batch_size=training_config['per_device_train_batch_size'],
-            per_device_eval_batch_size=training_config['per_device_eval_batch_size'],
-            gradient_accumulation_steps=training_config['gradient_accumulation_steps'],
-            learning_rate=training_config['learning_rate'],
-            warmup_steps=training_config['warmup_steps'],
-            eval_steps=training_config['eval_steps'],
-            save_steps=training_config['save_steps'],
-            logging_steps=training_config['logging_steps'],
-            eval_strategy=training_config['evaluation_strategy'],
-            save_strategy=training_config['save_strategy'],
-            save_total_limit=training_config['save_total_limit'],
-            load_best_model_at_end=training_config['load_best_model_at_end'],
-            metric_for_best_model=training_config['metric_for_best_model'],
-            greater_is_better=training_config['greater_is_better'],
-            fp16=training_config['fp16'] and self.device != "cpu",
-            dataloader_pin_memory=training_config['dataloader_pin_memory'],
-            remove_unused_columns=training_config['remove_unused_columns'],
-            report_to=training_config['report_to'],
-        )
-        
-        # DPOTrainerの初期化
+        # DPOConfig設定（TRL 0.18.1対応）
         dpo_config = self.config['dpo']
         
-        # TRL 0.18.1用の最小限パラメータでDPOTrainer初期化
         try:
-            # 最小限のパラメータのみ使用
+            # DPOConfigを使用（新しいAPI）
+            training_args = DPOConfig(
+                output_dir=output_dir,
+                num_train_epochs=training_config['num_train_epochs'],
+                max_steps=training_config['max_steps'],
+                per_device_train_batch_size=training_config['per_device_train_batch_size'],
+                per_device_eval_batch_size=training_config['per_device_eval_batch_size'],
+                gradient_accumulation_steps=training_config['gradient_accumulation_steps'],
+                learning_rate=training_config['learning_rate'],
+                warmup_steps=training_config['warmup_steps'],
+                eval_steps=training_config['eval_steps'],
+                save_steps=training_config['save_steps'],
+                logging_steps=training_config['logging_steps'],
+                eval_strategy=training_config['eval_strategy'],  # 正しいパラメータ名
+                save_strategy=training_config['save_strategy'],
+                save_total_limit=training_config['save_total_limit'],
+                load_best_model_at_end=training_config['load_best_model_at_end'],
+                metric_for_best_model=training_config['metric_for_best_model'],
+                greater_is_better=training_config['greater_is_better'],
+                fp16=training_config['fp16'] and self.device == "cuda",  # MPS対応
+                dataloader_pin_memory=training_config['dataloader_pin_memory'],
+                remove_unused_columns=training_config['remove_unused_columns'],
+                report_to=training_config['report_to'],
+                # DPO固有のパラメータ
+                beta=dpo_config['beta'],
+                max_length=dpo_config['max_length'],
+                max_prompt_length=dpo_config['max_prompt_length'],
+            )
+            
+            # DPOTrainerの初期化（TRL 0.18.1対応）
             self.trainer = DPOTrainer(
                 model=self.model,
                 args=training_args,
                 train_dataset=self.train_dataset,
                 eval_dataset=self.eval_dataset,
-                beta=dpo_config['beta'],
+                processing_class=self.tokenizer,  # 新しいAPI: tokenizer -> processing_class
             )
-            self.logger.info("✅ DPOTrainer初期化（最小パラメータ）")
+            self.logger.info("✅ DPOTrainer初期化完了（TRL 0.18.1 API）")
+            
         except Exception as e:
             self.logger.error(f"❌ DPOTrainer初期化失敗: {e}")
-            self.logger.info("DPOTrainerの代替案を試行...")
+            self.logger.info("🔄 代替初期化を試行...")
             
-            # 代替案: 基本的なDPO実装を使用
+            # 代替案: レガシーパラメータでの試行
             try:
-                from transformers import Trainer
-                self.trainer = Trainer(
+                # 古いAPI用のフォールバック
+                from transformers import TrainingArguments
+                
+                legacy_args = TrainingArguments(
+                    output_dir=output_dir,
+                    num_train_epochs=training_config['num_train_epochs'],
+                    max_steps=training_config['max_steps'],
+                    per_device_train_batch_size=training_config['per_device_train_batch_size'],
+                    per_device_eval_batch_size=training_config['per_device_eval_batch_size'],
+                    gradient_accumulation_steps=training_config['gradient_accumulation_steps'],
+                    learning_rate=training_config['learning_rate'],
+                    warmup_steps=training_config['warmup_steps'],
+                    eval_steps=training_config['eval_steps'],
+                    save_steps=training_config['save_steps'],
+                    logging_steps=training_config['logging_steps'],
+                    evaluation_strategy=training_config['eval_strategy'],
+                    save_strategy=training_config['save_strategy'],
+                    save_total_limit=training_config['save_total_limit'],
+                    load_best_model_at_end=training_config['load_best_model_at_end'],
+                    metric_for_best_model=training_config['metric_for_best_model'],
+                    greater_is_better=training_config['greater_is_better'],
+                    fp16=training_config['fp16'] and self.device == "cuda",
+                    dataloader_pin_memory=training_config['dataloader_pin_memory'],
+                    remove_unused_columns=training_config['remove_unused_columns'],
+                    report_to=training_config['report_to'],
+                )
+                
+                self.trainer = DPOTrainer(
                     model=self.model,
-                    args=training_args,
+                    args=legacy_args,
                     train_dataset=self.train_dataset,
                     eval_dataset=self.eval_dataset,
+                    tokenizer=self.tokenizer,  # レガシーパラメータ
+                    beta=dpo_config['beta'],
+                    max_length=dpo_config['max_length'],
+                    max_prompt_length=dpo_config['max_prompt_length'],
                 )
-                self.logger.info("✅ 基本Trainerで代替初期化完了")
+                self.logger.info("✅ DPOTrainer初期化完了（レガシーAPI）")
+                
             except Exception as e2:
-                self.logger.error(f"❌ 代替初期化も失敗: {e2}")
+                self.logger.error(f"❌ レガシー初期化も失敗: {e2}")
                 raise
         
         self.logger.info("✅ DPOトレーナー初期化完了")
+
     
     def train(self):
         """DPOトレーニングの実行"""
