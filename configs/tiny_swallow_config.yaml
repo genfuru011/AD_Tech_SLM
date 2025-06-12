@@ -53,7 +53,10 @@ training:
 dpo:
   max_length: 512
   max_prompt_length: 256
-  beta: 0.1  # DPO温度パラメータ
+  beta: 0.5  # DPO温度パラメータ（数値安定性のため増加）
+  label_smoothing: 0.0
+  loss_type: "sigmoid"  # 数値安定性向上
+  reference_free: false
   
 # Dataset Configuration
 dataset:
