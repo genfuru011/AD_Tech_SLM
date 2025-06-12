@@ -37,3 +37,7 @@ uvicorn>=0.24.0
 
 # Memory optimization
 bitsandbytes>=0.41.0
+
+# File system packages (for Colab compatibility)
+fsspec==2025.3.2
+gcsfs==2025.3.2
