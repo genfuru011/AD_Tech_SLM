@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 DPOトレーニングの詳細進捗監視スクリプト
 リアルタイムでメトリクスとETA（予想完了時間）を表示

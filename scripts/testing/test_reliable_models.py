@@ -1,4 +1,4 @@
-#!/opt/miniconda3/bin/python
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 Test reliable models that work well with current setup
 """

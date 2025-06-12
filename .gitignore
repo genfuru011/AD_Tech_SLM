@@ -21,12 +21,16 @@ wheels/
 *.egg
 MANIFEST
 
-# Virtual environments
-venv/
-env/
-ENV/
-.venv/
+# Virtual environments (Legacy - now using conda)
+# venv/
+# env/
+# ENV/
+# .venv/
 .env/
+
+# Conda environments (if created locally)
+conda-env/
+.conda/
 
 # IDEs
 .vscode/

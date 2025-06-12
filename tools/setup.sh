@@ -1,54 +1,37 @@
 #!/bin/bash
 
-# DPO Training Environment Setup Script for MacBook Air M2
-# This script sets up the Python environment for DPO training
+# =============================================================================
+# AD_Tech_SLM プロジェクト環境セットアップ (conda版)
+# =============================================================================
 
-set -e
+echo "🚀 AD_Tech_SLM 環境セットアップを開始します (conda使用)"
 
-echo "🚀 Setting up DPO Training Environment for AD_Tech_SLM"
-echo "Optimized for MacBook Air M2 8GB"
-
-# Check if Python is installed
-if ! command -v python3 &> /dev/null; then
-    echo "❌ Python3 is not installed. Please install Python 3.8+ first."
+# condaの確認
+if ! command -v conda &> /dev/null; then
+    echo "❌ conda が見つかりません。Miniconda または Anaconda をインストールしてください。"
     exit 1
 fi
 
-# Check Python version
-python_version=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-echo "📍 Python version: $python_version"
+echo "✅ conda が利用可能です"
 
-# Create virtual environment if it doesn't exist
-if [ ! -d "venv" ]; then
-    echo "📦 Creating virtual environment..."
-    python3 -m venv venv
+# dpo_training環境の存在確認
+if conda env list | grep -q "dpo_training"; then
+    echo "✅ dpo_training環境が既に存在します"
+    echo "🔄 環境をアクティベートします..."
+    eval "$(conda shell.bash hook)"
+    conda activate dpo_training
+else
+    echo "📦 dpo_training環境を作成します..."
+    conda create -n dpo_training python=3.11 -y
+    eval "$(conda shell.bash hook)"
+    conda activate dpo_training
+    
+    echo "📦 必要なパッケージをインストールします..."
+    pip install -r requirements.txt
 fi
 
-# Activate virtual environment
-echo "🔄 Activating virtual environment..."
-source venv/bin/activate
-
-# Upgrade pip
-echo "⬆️ Upgrading pip..."
-pip install --upgrade pip
-
-# Install requirements
-echo "📚 Installing Python packages..."
-pip install -r requirements.txt
-
-# Create necessary directories
-echo "📁 Creating project directories..."
-mkdir -p data/raw
-mkdir -p data/processed
-mkdir -p models
-mkdir -p outputs
-mkdir -p configs
-mkdir -p scripts
-mkdir -p notebooks
-
-echo "✅ Environment setup completed!"
 echo ""
-echo "To activate the environment, run:"
-echo "source venv/bin/activate"
-echo ""
-echo "To start training, check the scripts/ directory for training examples."
+echo "✅ セットアップ完了！"
+echo "📝 使用方法:"
+echo "   conda activate dpo_training"
+echo "   python scripts/training/conda_dpo_training.py"

@@ -1,0 +1,23 @@
+# AD_Tech_SLM - Conda Environment Configuration
+
+# This project uses conda for Python environment management
+# Virtual environment (.venv) has been completely migrated to conda
+
+# Environment name: dpo_training
+# Python version: 3.10.18
+# Package manager: conda + pip
+
+# Quick Setup:
+# conda activate dpo_training
+# python scripts/training/conda_dpo_training.py
+
+# Environment Information:
+CONDA_ENV_NAME=dpo_training
+PYTHON_PATH=/opt/miniconda3/envs/dpo_training/bin/python
+
+# VS Code Configuration:
+# - Python interpreter automatically set to conda environment
+# - Jupyter kernels configured for conda environment
+
+# Migration completed: June 12, 2025
+# .venv directory removed successfully

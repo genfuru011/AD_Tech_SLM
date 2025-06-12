@@ -1,4 +1,4 @@
-#!/opt/miniconda3/bin/python
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 Test GPT-2 model loading (no _lzma required)
 """

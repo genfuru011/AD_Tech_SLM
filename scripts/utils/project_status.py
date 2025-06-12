@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 プロジェクト状況確認スクリプト
 ディレクトリ構造、ファイル配置、トレーニング進捗を総合的に確認

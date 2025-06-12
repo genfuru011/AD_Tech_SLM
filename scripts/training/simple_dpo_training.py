@@ -1,4 +1,4 @@
-#!/opt/miniconda3/bin/python
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 Minimal DPO Training Implementation
 Without heavy dependencies that require _lzma

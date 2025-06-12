@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 DPO中間モデルのテストスクリプト - Step 300
 チェックポイント300のモデル品質を確認

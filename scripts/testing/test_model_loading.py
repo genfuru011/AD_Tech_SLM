@@ -1,4 +1,4 @@
-#!/opt/miniconda3/bin/python
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 Test script to verify model loading and MPS support
 """

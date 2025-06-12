@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 M2 Mac System Check and Optimization Script
 """

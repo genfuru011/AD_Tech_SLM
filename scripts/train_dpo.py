@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/miniconda3/envs/dpo_training/bin/python
 """
 DPO Training Script for AD_Tech_SLM
 Optimized for MacBook Air M2 8GB with MPS support
