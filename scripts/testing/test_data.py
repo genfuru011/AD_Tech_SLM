@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/miniconda3/bin/python
 """
 Simple data validation test without external dependencies
 """

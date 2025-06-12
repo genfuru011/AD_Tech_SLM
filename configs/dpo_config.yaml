@@ -2,8 +2,8 @@
 # Optimized for MacBook Air M2 8GB
 
 # Model settings
-model_name: "google/gemma-2b-it"  # Smaller model for M2 8GB
-max_length: 512
+model_name: "gpt2"  # Basic GPT-2 for testing (no _lzma required)
+max_length: 512  # Smaller for GPT-2
 max_prompt_length: 256
 
 # Training parameters
@@ -16,16 +16,16 @@ warmup_steps: 50
 weight_decay: 0.01
 beta: 0.1  # DPO beta parameter
 
-# LoRA settings
+# LoRA settings (optimized for GPT-2 architecture)
 use_lora: true
 lora_r: 16
 lora_alpha: 32
 lora_dropout: 0.1
-target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+target_modules: ["c_attn", "c_proj", "c_fc"]
 
 # Hardware settings
 device: "mps"  # Metal Performance Shaders for M2
-fp16: true  # Mixed precision for memory efficiency
+fp16: false  # Disabled for MPS compatibility
 dataloader_num_workers: 2
 
 # Logging and saving
@@ -35,10 +35,10 @@ eval_steps: 100
 save_total_limit: 3
 output_dir: "./outputs"
 logging_dir: "./outputs/logs"
-report_to: "tensorboard"
+report_to: []  # Disable tensorboard for now
 
 # Dataset settings
-dataset_path: "./data/sample_dpo_dataset.jsonl"
+dataset_path: "./data/dpo_dataset.jsonl"  # Updated to use actual dataset
 train_split: 0.8
 validation_split: 0.2
 
