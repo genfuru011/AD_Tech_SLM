@@ -1,0 +1,102 @@
+# Tiny-swallow 1.5B DPO Training Configuration
+# 日本語特化軽量モデル用設定
+
+# Model Configuration
+model:
+  name: "SakanaAI/TinySwallow-1.5B-Instruct"
+  backup_models:
+    - "tokyotech-llm/Swallow-1.5b-instruct-hf"
+    - "rinna/japanese-gpt-neox-3.6b-instruction-sft"
+    - "rinna/japanese-gpt2-medium"
+  
+  parameters:
+    torch_dtype: "float16"  # MPS最適化
+    trust_remote_code: true
+    device_map: "auto"
+
+# Training Configuration
+training:
+  # 基本設定
+  output_dir: "./outputs/tiny_swallow_dpo"
+  num_train_epochs: 3
+  max_steps: 800
+  
+  # バッチ設定（1.5Bモデル用最適化）
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 4
+  
+  # 学習率設定
+  learning_rate: 1.0e-6
+  warmup_steps: 50
+  
+  # 評価・保存設定
+  eval_steps: 50
+  save_steps: 100
+  logging_steps: 10
+  evaluation_strategy: "steps"
+  save_strategy: "steps"
+  save_total_limit: 3
+  
+  # 最適化設定
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  
+  # システム設定
+  fp16: true  # MPS使用時
+  dataloader_pin_memory: false
+  remove_unused_columns: false
+  report_to: null
+
+# DPO Specific Configuration
+dpo:
+  max_length: 512
+  max_prompt_length: 256
+  beta: 0.1  # DPO温度パラメータ
+  
+# Dataset Configuration
+dataset:
+  train_file: "data/dpo_dataset.jsonl"
+  test_size: 0.1
+  seed: 42
+  
+  # データ検証
+  required_keys: ["prompt", "chosen", "rejected"]
+  
+# Hardware Optimization
+hardware:
+  # MacBook Air M2 8GB用設定
+  use_mps: true
+  memory_efficient: true
+  
+  # メモリ不足時の代替設定
+  fallback:
+    per_device_train_batch_size: 1
+    max_length: 256
+    gradient_accumulation_steps: 8
+
+# Logging and Monitoring
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(levelname)s - %(message)s"
+  
+  # 保存する情報
+  save_metrics: true
+  save_model_checkpoints: true
+  
+# Testing Configuration
+testing:
+  # テスト用プロンプト
+  test_prompts:
+    - "プログラマティック広告の利点について教えてください。"
+    - "RTBの仕組みを簡潔に説明してください。"
+    - "デジタルマーケティングにおける重要な指標は何ですか？"
+    - "Cookie廃止が広告業界に与える影響について説明してください。"
+    - "DMPとCDPの違いを教えてください。"
+  
+  generation_config:
+    max_new_tokens: 100
+    temperature: 0.7
+    do_sample: true
+    no_repeat_ngram_size: 2
