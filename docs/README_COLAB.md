@@ -89,7 +89,29 @@ gradient_accumulation_steps=2
 !pip install --upgrade transformers trl peft
 ```
 
-#### 3. 学習が進まない
+#### 3. 依存関係エラー (fastai, fsspec)
+```bash
+# fastaiとtorchの競合エラー
+ERROR: fastai 2.7.19 requires torch<2.7,>=1.10, but you have torch 2.7.1 which is incompatible.
+
+# fsspec関連のエラー
+ERROR: gcsfs 2025.3.2 requires fsspec==2025.3.2, but you have fsspec 2025.3.0 which is incompatible.
+
+# 📝 解決手順:
+# 1. Runtime → Restart runtime をクリック
+# 2. ノートブックの「緊急クイックフィックス」セルで QUICK_FIX = True に設定
+# 3. または手動で以下を実行:
+
+!pip uninstall -y fastai torch gcsfs fsspec
+!pip install 'torch>=2.0,<2.7' --index-url https://download.pytorch.org/whl/cu118
+!pip install fsspec==2025.3.2 gcsfs==2025.3.2
+!pip install 'fastai>=2.7.0'
+```
+!pip install fsspec==2025.3.2
+!pip install gcsfs==2025.3.2
+```
+
+#### 4. 学習が進まない
 ```python
 # 学習率を調整
 learning_rate=1e-5  # より小さく
